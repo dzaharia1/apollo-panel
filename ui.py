@@ -64,21 +64,21 @@ temperatureTic.append(temperatureTicImage)
 temperatureGraduation = Group(x=17, y=0)
 temperatureGraduation.append(tempGraduationImage)
 temperatureScale = Group(x=44, y=0)
+temperatureScaleItems = []
 
 # startingCoordinate = 0
 startingNumber = temperatureSetting + 5
-endNumber = temperatureSetting - 5
 for i in range(0, 11):
-    thisItem = startingNumber - i
-    thisLabel = Label(font=smallText,
+    thisItemNumber = startingNumber - i
+    temperatureScaleItems.append(Label(font=smallText,
         color=0x6B6B6B,
         x=0,
         y=(i * 24),
-        line_spacing=0)
-    if thisItem == temperatureSetting:
-        thisLabel.color = 0xFFFFFF
-    thisLabel.text = str(thisItem)
-    temperatureScale.append(thisLabel)
+        line_spacing=0))
+    if thisItemNumber == temperatureSetting:
+        temperatureScaleItems[i].color = 0xFFFFFF
+    temperatureScaleItems[i].text = str(thisItemNumber)
+    temperatureScale.append(temperatureScaleItems[i])
 temperatureGauge.append(temperatureTic)
 temperatureGauge.append(temperatureGraduation)
 temperatureGauge.append(temperatureScale)
@@ -89,19 +89,20 @@ humidityTic.append(humidityTicImage)
 humidityGraduation = Group(x=27, y=0)
 humidityGraduation.append(humidityGraduationImage)
 humidityScale = Group(x=0, y=0)
+humidityScaleItems = []
 
 startingNumber = 65
 for i in range(0, 11):
     thisItem = startingNumber - (i * 5)
-    thisLabel = Label(font=smallText,
+    humidityScaleItems.append(Label(font=smallText,
         color=0x6B6B6B,
         x=0,
         y=(i * 24),
-        line_spacing=0)
+        line_spacing=0))
     if thisItem == 40:
-        thisLabel.color = 0xFFFFFF
-    thisLabel.text = str(thisItem)
-    humidityScale.append(thisLabel)
+        humidityScaleItems[i].color = 0xFFFFFF
+    humidityScaleItems[i].text = str(thisItem)
+    humidityScale.append(humidityScaleItems[i])
 humidityGauge.append(humidityTic)
 humidityGauge.append(humidityGraduation)
 humidityGauge.append(humidityScale)
@@ -129,7 +130,7 @@ fanButtonLabels[0].x = 2
 fanButtonLabels[1].text = "LO"
 fanButtonLabels[1].x = 12
 fanButtonLabels[2].text = "MD"
-fanButtonLabels[2].x = 3
+fanButtonLabels[2].x = 4
 fanButtonLabels[3].text = "HI"
 fanButtonLabels[3].x = 14
 
@@ -167,3 +168,71 @@ modeButtonLabels[2].text = "C"
 modeButtonLabels[2].x = 12
 
 display.show(ui)
+
+def updateModeSetting(newMode):
+    global modeSetting
+    modeSetting = newMode
+    for i in range(3):
+        modeButtonBackgrounds[i].fill = 0x000000
+        modeButtonLabels[i].color = 0xFFFFFF
+
+    modeButtonBackgrounds[getModeIndex(modeSetting)].fill = 0xFFFFFF
+    modeButtonLabels[getModeIndex(modeSetting)].color = 0x000000
+
+def updateTemperatureSetting(newTemperature):
+    print("updating temp setting")
+    global temperatureSetting
+    temperatureSetting = newTemperature
+    startingTemperature = temperatureSetting + 5
+    for i in range(len(temperatureScaleItems)):
+        thisItemNumber = startingTemperature - i
+        temperatureScaleItems[i].text = str(thisItemNumber)
+
+def updateFanSpeedSetting(newSpeed):
+    global fanSpeed
+    fanSpeed = newSpeed
+    for i in range(len(fanButtons)):
+        fanButtonBackgrounds[i].fill = 0x000000
+        fanButtonLabels[i].color = 0xFFFFFF
+    fanButtonBackgrounds[fanSpeed].fill = 0xFFFFFF
+    fanButtonLabels[fanSpeed].color = 0x000000
+    
+def updateTemperature(newTemperature):
+    minY = 0
+    maxY = 232
+    minTemp = temperatureSetting - 5
+    maxTemp = temperatureSetting + 5
+    
+    if newTemperature < minTemp:
+        temperatureTic.y = minY
+    elif newTemperature > maxTemp:
+        temperatureTic.y = maxY
+    else:
+        temperatureTic.y = maxY - int((newTemperature - minTemp) * (maxY / 10))
+
+def updateHumidity(newHumidity):
+    minY = 0
+    maxY = 232
+    minHumidity = 15
+    maxHumidity = 65
+
+    if newHumidity < minHumidity:
+        humidityTic.y = maxY
+    elif newHumidity > maxHumidity:
+        humidityTic.y = minY
+    else:
+        humidityTic.y = maxY - int((newHumidity - minHumidity) * (maxY / 10))
+
+def set_backlight(val):
+    display.brightness = val
+
+def disableScreen(force=False):
+    global screenEnabled
+    if screenEnabled or force:
+        screenEnabled = False
+        set_backlight(.05)
+
+def enableScreen():
+    global screenEnabled
+    screenEnabled = True
+    set_backlight(1)
