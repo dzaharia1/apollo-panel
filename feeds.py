@@ -32,9 +32,9 @@ def connected(client, userdata, flags, rc):
 def disconnected(client):
     print("Disconnected from HA")
 
-# def subscribed(a, b, c, d):
-    # print("Connected to:")
-    # print(mqtt_client._subscribed_topics)
+def subscribed(a, b, c, d):
+    print("Connected to:")
+    print(mqtt_client._subscribed_topics)
 
 print("Connecting to wifi")
 wifi.connect()
@@ -55,24 +55,6 @@ def publish(feed, data):
     except:
         print("Publish failed")
         try:
-            mqtt_client.reconnect(resub_topics=False)
-            mqtt_client.subscribe([
-                (temperatureSettingFeed, 1),
-                (modeSettingFeed, 1),
-                (fanSpeedCommand, 1),
-                (fanToggleFeed, 1)])
-        except:
-            wifi.reset()
-            wifi.connect()
-
-        publish(feed, data)
-
-def loop():
-    try:
-        mqtt_client.loop(timeout=.5)
-    except:
-        print("Fetch failed")
-        try:
             mqtt_client.reconnect()
             # mqtt_client.subscribe([
             #     (temperatureSettingFeed, 1),
@@ -83,15 +65,34 @@ def loop():
             wifi.reset()
             wifi.connect()
 
-# mqtt_client.on_connect = connected
-# mqtt_client.on_disconnect = disconnected
-# mqtt_client.on_subscribe = subscribed
+        publish(feed, data)
+
+def loop():
+    try:
+        mqtt_client.loop(timeout=.05)
+    except:
+        print("Fetch failed")
+        try:
+            mqtt_client.reconnect()
+            # mqtt_client.reconnect(resub_topics=False)
+            # mqtt_client.subscribe([
+            #     (temperatureSettingFeed, 1),
+            #     (modeSettingFeed, 1),
+            #     (fanSpeedCommand, 1),
+            #     (fanToggleFeed, 1)])
+        except:
+            wifi.reset()
+            wifi.connect()
+
+mqtt_client.on_connect = connected
+mqtt_client.on_disconnect = disconnected
+mqtt_client.on_subscribe = subscribed
 
 print("Connecting to Home Assistant")
 mqtt_client.connect()
 
 mqtt_client.subscribe([
-    (temperatureSettingFeedCommand, 1),
+    (temperatureSettingFeed, 1),
     (modeSettingFeed, 1),
     (fanSpeedCommand, 1),
     (fanToggleFeed, 1)])

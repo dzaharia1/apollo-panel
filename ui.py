@@ -3,7 +3,6 @@ from analogio import AnalogOut
 import displayio
 from displayio import ColorConverter, Display, Group
 import board
-import displayio
 import terminalio
 import neopixel
 from adafruit_display_text.label import Label
@@ -108,13 +107,27 @@ humidityGauge.append(humidityGraduation)
 humidityGauge.append(humidityScale)
 
 # build out fan speed buttons
+speedButtonWidth = 64
+speedButtonHeight = 45
 fanButtons = []
+fanButtonTargets = []
 fanButtonBackgrounds = []
 fanButtonLabels = []
 for i in range(4):
     fanButtons.append(Group(x=0, y=i * 53))
     fanSpeedControls.append(fanButtons[i])
-    fanButtonBackgrounds.append(RoundRect(x=0, y=0, width=64, height=45, r=4, fill=0x000000))
+    fanButtonBackgrounds.append(RoundRect(x=0,
+        y=0,
+        width=64,
+        height=45,
+        r=4,
+        fill=0x000000))
+    fanButtonTargets.append(Button(x=0,
+        y=0,
+        width=64,
+        height=45,
+        fill_color=None,
+        outline_color=None))
     fanButtonLabels.append(Label(font=largeText,
         color=0xFFFFFF,
         x=2,
@@ -122,6 +135,7 @@ for i in range(4):
         line_spacing=0))
     fanButtons[i].append(fanButtonBackgrounds[i])
     fanButtons[i].append(fanButtonLabels[i])
+    fanButtons[i].append(fanButtonTargets[i])
 
 fanButtonBackgrounds[fanSpeed].fill = 0xFFFFFF
 fanButtonLabels[fanSpeed].color = 0x000000
@@ -136,12 +150,26 @@ fanButtonLabels[3].x = 14
 
 # build out mode buttons
 modeButtons = []
+modeButonTargets = []
 modeButtonBackgrounds = []
 modeButtonLabels = []
 for i in range(3):
     modeButtons.append(Group(x=0, y=i * 62))
     modeControls.append(modeButtons[i])
-    modeButtonBackgrounds.append(RoundRect(x=0, y=0, width=50, height=45, r=4, fill=0x000000))
+    modeButtonBackgrounds.append(RoundRect(
+        x=0,
+        y=0,
+        width=50,
+        height=45,
+        r=4,
+        fill=0x000000))
+    modeButonTargets.append(Button(
+        x=0,
+        y=0,
+        width=50,
+        height=45,
+        fill_color=None,
+        outline_color=None))
     modeButtonLabels.append(Label(font=largeText,
         color=0xFFFFFF,
         x=2,
@@ -167,9 +195,21 @@ modeButtonLabels[1].x = 13
 modeButtonLabels[2].text = "C"
 modeButtonLabels[2].x = 12
 
+# button so that user can brighten screen to check stats
+screenActivateButton = Button(
+    x=50,
+    y=100,
+    width=screen_width - (100),
+    height=screen_height - (200),
+    fill_color=None,
+    outline_color=None,
+    style=Button.RECT
+)
+ui.append(screenActivateButton)
+
 display.show(ui)
 
-def updateModeSetting(newMode):
+def updateMode(newMode):
     global modeSetting
     modeSetting = newMode
     for i in range(3):
@@ -221,7 +261,17 @@ def updateHumidity(newHumidity):
     elif newHumidity > maxHumidity:
         humidityTic.y = minY
     else:
-        humidityTic.y = maxY - int((newHumidity - minHumidity) * (maxY / 10))
+        humidityTic.y = maxY - int((newHumidity - minHumidity)/10 * (maxY / 10))
+
+def refresh_status_light():
+    if fanToggle and screenEnabled and fanSpeed != "0":
+        status_light.brightness = 1
+    elif fanToggle and not screenEnabled and fanSpeed != "0":
+        status_light.brightness = .15
+    elif not fanToggle or fanSpeed == "0":
+        status_light.brightness = 0
+
+    status_light.show()
 
 def set_backlight(val):
     display.brightness = val
