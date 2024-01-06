@@ -1,4 +1,3 @@
-from ui_old import updateTemperature
 import board
 import time
 import terminalio
@@ -97,7 +96,8 @@ def mqtt_message(client, feed_id, payload):
     if feed_id == feeds.temperatureSettingFeed:
         print("got new temperature setting")
         ui.updateTemperatureSetting(floor(float(payload)))
-        updateTemperature()
+        ui.updateTemperatureSetting()
+        checkTemperature()
     if feed_id == feeds.fanSpeedCommand:
         print("got new fan speed setting")
         ui.updateFanSpeedSetting(int(payload))
@@ -143,7 +143,7 @@ while True:
     checkButtons()
     if (time.monotonic() - lastButtonPush) > 15 :
         ui.disableScreen()
-    if (time.monotonic() - prev_refresh_time) > 10:
+    if (time.monotonic() - prev_refresh_time) > 40:
         checkTemperature()
         prev_refresh_time = time.monotonic()
     feeds.loop()
