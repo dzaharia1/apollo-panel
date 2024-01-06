@@ -55,12 +55,12 @@ def publish(feed, data):
     except:
         print("Publish failed")
         try:
-            mqtt_client.reconnect()
-            # mqtt_client.subscribe([
-            #     (temperatureSettingFeed, 1),
-            #     (modeSettingFeed, 1),
-            #     (fanSpeedCommand, 1),
-            #     (fanToggleFeed, 1)])
+            mqtt_client.reconnect(resub_topics=False)
+            mqtt_client.subscribe([
+                (temperatureSettingFeed, 1),
+                (modeSettingFeed, 1),
+                (fanSpeedCommand, 1),
+                (fanToggleFeed, 1)])
         except:
             wifi.reset()
             wifi.connect()
@@ -73,13 +73,13 @@ def loop():
     except:
         print("Fetch failed")
         try:
-            mqtt_client.reconnect()
-            # mqtt_client.reconnect(resub_topics=False)
-            # mqtt_client.subscribe([
-            #     (temperatureSettingFeed, 1),
-            #     (modeSettingFeed, 1),
-            #     (fanSpeedCommand, 1),
-            #     (fanToggleFeed, 1)])
+            # mqtt_client.reconnect()
+            mqtt_client.reconnect(resub_topics=False)
+            mqtt_client.subscribe([
+                (temperatureSettingFeed, 1),
+                (modeSettingFeed, 1),
+                (fanSpeedCommand, 1),
+                (fanToggleFeed, 1)])
         except:
             wifi.reset()
             wifi.connect()
