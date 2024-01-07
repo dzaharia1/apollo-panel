@@ -9,14 +9,32 @@ from math import floor
 import ui
 import feeds
 from feeds import mqtt_client
+from adafruit_seesaw.seesaw import Seesaw
+from adafruit_seesaw.digitalio import DigitalIO
+import digitalio
+from adafruit_seesaw.pwmout import PWMOut
 
 i2c_bus = busio.I2C(board.SCL, board.SDA)
 temp_probe = adafruit_htu31d.HTU31D(i2c_bus)
 temp_probe.heater = False
 lightSensor = AnalogIn(board.LIGHT)
 
+# set up the switches
+leftButtonBoard = Seesaw(i2c_bus, 0x3A)
+rightButtonBoard = Seesaw(i2c_bus, 0x3B)
+buttonBoards = (leftButtonBoard, rightButtonBoard)
+buttonPins = (18, 19, 20, 2)
+buttons = []
+for buttonBoard in buttonBoards:
+    for buttonPin in buttonPins:
+        button = DigitalIO(buttonBoard, buttonPin)
+        button.direction = digitalio.Direction.INPUT
+        button.pull = digitalio.Pull.UP
+        buttons.append(button)
+
 lastButtonPush = 0.0
-def checkButtons():
+
+def checkTouchScreen():
     global lastButtonPush
     point = ui.ts.touch_point
 
@@ -63,6 +81,25 @@ def checkButtons():
                     ui.set_backlight(1)
         time.sleep(.075)
 
+def checkButtons():
+    global lastButtonPush
+    i = 0
+    for button in buttons:
+        if not button.value:
+            ui.enableScreen()
+            lastButtonPush = time.monotonic()
+            if i == 0:
+                ui.updateTemperatureSetting(ui.temperatureSetting - 1)
+                feeds.publish(feeds.temperatureSettingFeedCommand, ui.temperatureSetting)
+                checkTemperature()
+            elif i == 1:
+                ui.updateTemperatureSetting(ui.temperatureSetting + 1)
+                feeds.publish(feeds.temperatureSettingFeedCommand, ui.temperatureSetting)
+                checkTemperature()
+            else:
+                feeds.publish(feeds.commanderFeed, i - 1)
+        i = i + 1
+            
 
 def checkTemperature():
     print("Check readings")
@@ -140,6 +177,7 @@ feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
 prev_refresh_time = 0.0
 while True:
     # print("Main loop")
+    checkTouchScreen()
     checkButtons()
     if (time.monotonic() - lastButtonPush) > 15 :
         ui.disableScreen()

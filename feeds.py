@@ -25,6 +25,7 @@ fanSpeedFeed = "state/fan-speed"
 fanSpeedCommand = "state/fan-speed-command"
 temperatureSensorFeed = "state/temp-sensor"
 humidityFeed = "state/humidity-sensor"
+commanderFeed = "commander/command"
 
 def connected(client, userdata, flags, rc):
     print("Connected to HA!")
