@@ -33,7 +33,7 @@ def checkButtons():
                 lastButtonPush = time.monotonic()
                 if i == 0:
                     ui.updateMode("manual")
-                    ui.fanToggle = 1
+                    ui.toggleFan(1)
                     feeds.publish(feeds.modeSettingFeedCommand, "off")
                     feeds.publish(feeds.fanSpeedFeed, ui.fanSpeed)
                     feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
@@ -49,7 +49,7 @@ def checkButtons():
             if button.contains(point):
                 lastButtonPush = time.monotonic()
                 if ui.modeSetting == "manual":
-                    ui.fanToggle = 1
+                    ui.toggleFan(1)
                     feeds.publish(feeds.fanToggleFeed, 1)
 
                 if i == 0:
@@ -76,17 +76,17 @@ def checkTemperature():
 
     if ui.modeSetting == "heat":
         if (currTemp <= ui.temperatureSetting):
-            ui.fanToggle = 1
+            ui.toggleFan(1)
             feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
         else:
-            ui.fanToggle = 0
+            ui.toggleFan(0)
             feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
     elif ui.modeSetting == "cool":
         if (currTemp >= ui.temperatureSetting):
-            ui.fanToggle = 1
+            ui.toggleFan(1)
             feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
         else:
-            ui.fanToggle = 0
+            ui.toggleFan(0)
             feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
     ui.refresh_status_light()
 
@@ -107,11 +107,11 @@ def mqtt_message(client, feed_id, payload):
         if payload == "heat" or payload == "cool" or payload == "manual":
             ui.updateMode(payload)
         if payload == "manual":
-            ui.fanToggle = 1
+            ui.toggleFan(1)
             feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
         elif payload == "off":
             ui.updateMode("manual")
-            ui.fanToggle = 0
+            ui.toggleFan(0)
             feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
 
         # if payload == "heat" or payload == "cool":

@@ -10,6 +10,7 @@ from adafruit_button import Button
 from adafruit_bitmap_font import bitmap_font
 from adafruit_display_shapes.roundrect import RoundRect
 import adafruit_touchscreen
+import styles
 
 font = terminalio.FONT
 display = board.DISPLAY
@@ -75,7 +76,7 @@ for i in range(0, 11):
         y=(i * 24),
         line_spacing=0))
     if thisItemNumber == temperatureSetting:
-        temperatureScaleItems[i].color = 0xFFFFFF
+        temperatureScaleItems[i].color = styles.colors["white"]
     temperatureScaleItems[i].text = str(thisItemNumber)
     temperatureScale.append(temperatureScaleItems[i])
 temperatureGauge.append(temperatureTic)
@@ -99,7 +100,7 @@ for i in range(0, 11):
         y=(i * 24),
         line_spacing=0))
     if thisItem == 40:
-        humidityScaleItems[i].color = 0xFFFFFF
+        humidityScaleItems[i].color = styles.colors["white"]
     humidityScaleItems[i].text = str(thisItem)
     humidityScale.append(humidityScaleItems[i])
 humidityGauge.append(humidityTic)
@@ -129,7 +130,7 @@ for i in range(4):
         fill_color=None,
         outline_color=None))
     fanButtonLabels.append(Label(font=largeText,
-        color=0xFFFFFF,
+        color=styles.colors["white"],
         x=2,
         y=23,
         line_spacing=0))
@@ -137,7 +138,7 @@ for i in range(4):
     fanButtons[i].append(fanButtonLabels[i])
     fanButtons[i].append(fanButtonTargets[i])
 
-fanButtonBackgrounds[fanSpeed].fill = 0xFFFFFF
+fanButtonBackgrounds[fanSpeed].fill = styles.colors["white"]
 fanButtonLabels[fanSpeed].color = 0x000000
 fanButtonLabels[0].text = "OFF"
 fanButtonLabels[0].x = 2
@@ -171,7 +172,7 @@ for i in range(3):
         fill_color=None,
         outline_color=None))
     modeButtonLabels.append(Label(font=largeText,
-        color=0xFFFFFF,
+        color=styles.colors["white"],
         x=2,
         y=23,
         line_spacing=0))
@@ -186,7 +187,7 @@ def getModeIndex(mode):
     elif mode == "cool":
         return 2
 
-modeButtonBackgrounds[getModeIndex(modeSetting)].fill = 0xFFFFFF
+modeButtonBackgrounds[getModeIndex(modeSetting)].fill = styles.colors["white"]
 modeButtonLabels[getModeIndex(modeSetting)].color = 0x000000
 modeButtonLabels[0].text = "M"
 modeButtonLabels[0].x = 10
@@ -214,9 +215,9 @@ def updateMode(newMode):
     modeSetting = newMode
     for i in range(3):
         modeButtonBackgrounds[i].fill = 0x000000
-        modeButtonLabels[i].color = 0xFFFFFF
+        modeButtonLabels[i].color = styles.colors["white"]
 
-    modeButtonBackgrounds[getModeIndex(modeSetting)].fill = 0xFFFFFF
+    modeButtonBackgrounds[getModeIndex(modeSetting)].fill = styles.colors["white"]
     modeButtonLabels[getModeIndex(modeSetting)].color = 0x000000
 
 def updateTemperatureSetting(newTemperature):
@@ -233,8 +234,8 @@ def updateFanSpeedSetting(newSpeed):
     fanSpeed = newSpeed
     for i in range(len(fanButtons)):
         fanButtonBackgrounds[i].fill = 0x000000
-        fanButtonLabels[i].color = 0xFFFFFF
-    fanButtonBackgrounds[fanSpeed].fill = 0xFFFFFF
+        fanButtonLabels[i].color = styles.colors["white"]
+    fanButtonBackgrounds[fanSpeed].fill = styles.colors["white"]
     fanButtonLabels[fanSpeed].color = 0x000000
     
 def updateTemperature(newTemperature):
@@ -262,6 +263,17 @@ def updateHumidity(newHumidity):
         humidityTic.y = minY
     else:
         humidityTic.y = maxY - int((newHumidity - minHumidity)/10 * (maxY / 10))
+
+def toggleFan(value):
+    global fanToggle
+    fanToggle = value;
+    if toggleFan == 1:
+        if modeSetting == "heat":
+            fanButtonBackgrounds[fanSpeed].fill = styles.colors["heat"]
+        if modeSetting == "cool":
+            fanButtonBackgrounds[fanSpeed].fill = styles.colors["cool"]
+    else:
+        fanButtonBackgrounds[fanSpeed].fill = styles.colors["white"]
 
 def refresh_status_light():
     if fanToggle and screenEnabled and fanSpeed != "0":
