@@ -150,23 +150,7 @@ def mqtt_message(client, feed_id, payload):
             ui.updateMode("manual")
             ui.toggleFan(0)
             feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
-
-        # if payload == "heat" or payload == "cool":
-        #     ui.updateMode(payload)
-        #     if (ui.screenEnabled == False):
-        #         ui.disableScreen(force=True)
-        # elif payload == "manual":
-        #     ui.updateMode("manual")
-        #     if (ui.screenEnabled == False):
-        #         ui.disableScreen(force=True)
-        #     ui.fanToggle = 1
-        #     feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
-        # elif payload == "off":
-        #     ui.updateMode("manual")
-        #     if (ui.screenEnabled == False):
-        #         ui.disableScreen(force=True)
-        #     ui.fanToggle = 0
-        #     feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
+        checkTemperature()
             
 
 mqtt_client.on_message = mqtt_message

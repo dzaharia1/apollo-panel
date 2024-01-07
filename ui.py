@@ -147,7 +147,7 @@ fanButtonLabels[1].x = 12
 fanButtonLabels[2].text = "MD"
 fanButtonLabels[2].x = 4
 fanButtonLabels[3].text = "HI"
-fanButtonLabels[3].x = 14
+fanButtonLabels[3].x = 12
 
 # build out mode buttons
 modeButtons = []
@@ -266,11 +266,13 @@ def updateHumidity(newHumidity):
 
 def toggleFan(value):
     global fanToggle
-    fanToggle = value;
-    if toggleFan == 1:
+    fanToggle = value
+    if fanToggle == 1:
         if modeSetting == "heat":
+            print("Setting mode to heat")
             fanButtonBackgrounds[fanSpeed].fill = styles.colors["heat"]
         if modeSetting == "cool":
+            print("Setting mode to cool")
             fanButtonBackgrounds[fanSpeed].fill = styles.colors["cool"]
     else:
         fanButtonBackgrounds[fanSpeed].fill = styles.colors["white"]
