@@ -25,15 +25,15 @@ rightButtonBoard = Seesaw(i2c_bus, 0x3B)
 buttonBoards = (leftButtonBoard, rightButtonBoard)
 buttonPins = (18, 19, 20, 2)
 buttons = []
-for butonhBoard in buttonBoards:
+for buttonBoard in buttonBoards:
     for buttonPin in buttonPins:
-        button = DigitalIO(buttonBoards, buttonPin)
+        button = DigitalIO(buttonBoard, buttonPin)
         button.direction = digitalio.Direction.INPUT
         button.pull = digitalio.Pull.UP
         buttons.append(button)
 
-
 lastButtonPush = 0.0
+
 def checkTouchScreen():
     global lastButtonPush
     point = ui.ts.touch_point
@@ -82,18 +82,23 @@ def checkTouchScreen():
         time.sleep(.075)
 
 def checkButtons():
-    for i, button in buttons:
-        if button.value:
+    global lastButtonPush
+    i = 0
+    for button in buttons:
+        if not button.value:
             ui.enableScreen()
             lastButtonPush = time.monotonic()
             if i == 0:
-                ui.updateTemperature(ui.temperatureSetting + 1)
+                ui.updateTemperatureSetting(ui.temperatureSetting - 1)
                 feeds.publish(feeds.temperatureSettingFeedCommand, ui.temperatureSetting)
+                checkTemperature()
             elif i == 1:
-                ui.updateTemperature(ui.temperatureSetting - 1)
+                ui.updateTemperatureSetting(ui.temperatureSetting + 1)
                 feeds.publish(feeds.temperatureSettingFeedCommand, ui.temperatureSetting)
+                checkTemperature()
             else:
-                feeds.publish(feeds.commander, i - 1)
+                feeds.publish(feeds.commanderFeed, i - 1)
+        i = i + 1
             
 
 def checkTemperature():
@@ -173,6 +178,7 @@ prev_refresh_time = 0.0
 while True:
     # print("Main loop")
     checkTouchScreen()
+    checkButtons()
     if (time.monotonic() - lastButtonPush) > 15 :
         ui.disableScreen()
     if (time.monotonic() - prev_refresh_time) > 40:
