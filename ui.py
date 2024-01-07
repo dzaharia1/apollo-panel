@@ -147,7 +147,7 @@ fanButtonLabels[1].x = 12
 fanButtonLabels[2].text = "MD"
 fanButtonLabels[2].x = 4
 fanButtonLabels[3].text = "HI"
-fanButtonLabels[3].x = 12
+fanButtonLabels[3].x = 16
 
 # build out mode buttons
 modeButtons = []
@@ -294,7 +294,7 @@ def disableScreen(force=False):
     global screenEnabled
     if screenEnabled or force:
         screenEnabled = False
-        set_backlight(.05)
+        set_backlight(.35)
 
 def enableScreen():
     global screenEnabled
