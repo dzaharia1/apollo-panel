@@ -28,18 +28,18 @@ humidityFeed = "state/humidity-sensor"
 commanderFeed = "commander/command"
 
 def connected(client, userdata, flags, rc):
-    print("Connected to HA!")
+    # print("Connected to HA!")
+    return
 
 def disconnected(client):
-    print("Disconnected from HA")
+    # print("Disconnected from HA")
+    return
 
 def subscribed(a, b, c, d):
     print("Connected to:")
     print(mqtt_client._subscribed_topics)
 
-print("Connecting to wifi")
 wifi.connect()
-print("Connected to wifi as ", wifi.ip_address())
 
 MQTT.set_socket(socket, esp)
 mqtt_client = MQTT.MQTT(
@@ -50,11 +50,9 @@ mqtt_client = MQTT.MQTT(
 )
 
 def publish(feed, data):
-    print("Publishing {} to {}".format(feed, data))
     try:
         mqtt_client.publish(feed, data, retain=True)
     except:
-        print("Publish failed")
         try:
             mqtt_client.reconnect(resub_topics=False)
             mqtt_client.subscribe([
@@ -72,7 +70,6 @@ def loop():
     try:
         mqtt_client.loop(timeout=.05)
     except:
-        print("Fetch failed")
         try:
             # mqtt_client.reconnect()
             mqtt_client.reconnect(resub_topics=False)
@@ -87,9 +84,8 @@ def loop():
 
 mqtt_client.on_connect = connected
 mqtt_client.on_disconnect = disconnected
-mqtt_client.on_subscribe = subscribed
+# mqtt_client.on_subscribe = subscribed
 
-print("Connecting to Home Assistant")
 mqtt_client.connect()
 
 mqtt_client.subscribe([
