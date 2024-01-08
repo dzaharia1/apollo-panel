@@ -34,52 +34,57 @@ for buttonBoard in buttonBoards:
 
 lastButtonPush = 0.0
 
-def checkTouchScreen():
-    global lastButtonPush
-    point = ui.ts.touch_point
+# def checkTouchScreen():
+#     global lastButtonPush
+#     point = ui.ts.touch_point
 
-    # touch detected
-    if point and point[-1] > 30000:
-        if ui.screenActivateButton.contains(point):
-            ui.enableScreen()
-            lastButtonPush = time.monotonic()
+#     # touch detected
+#     if point and point[-1] > 30000:
+#         if ui.screenActivateButton.contains(point):
+#             ui.enableScreen()
+#             lastButtonPush = time.monotonic()
 
-    if point and ui.screenEnabled:
-        # check mode buttons
-        for i, button in enumerate(ui.modeButonTargets):
-            if button.contains(point):
-                lastButtonPush = time.monotonic()
-                if i == 0:
-                    ui.updateMode("manual")
-                    ui.toggleFan(1)
-                    feeds.publish(feeds.modeSettingFeedCommand, "off")
-                    feeds.publish(feeds.fanSpeedFeed, ui.fanSpeed)
-                    feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
-                elif i == 1:
-                    ui.updateMode("heat")
-                    feeds.publish(feeds.modeSettingFeedCommand, "heat")
-                elif i == 2:
-                    ui.updateMode("cool")
-                    feeds.publish(feeds.modeSettingFeedCommand, "cool")
+#     if point and ui.screenEnabled:
+#         # check mode buttons
+#         i = 0
+#         for button in ui.modeButtonTargets:
+#             if button.contains(point):
+#                 lastButtonPush = time.monotonic()
+#                 if i == 0:
+#                     ui.updateMode("manual")
+#                     ui.toggleFan(1)
+#                     feeds.publish(feeds.modeSettingFeedCommand, "off")
+#                     feeds.publish(feeds.fanSpeedFeed, ui.fanSpeed)
+#                     feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
+#                 elif i == 1:
+#                     ui.updateMode("heat")
+#                     feeds.publish(feeds.modeSettingFeedCommand, "heat")
+#                 elif i == 2:
+#                     ui.updateMode("cool")
+#                     feeds.publish(feeds.modeSettingFeedCommand, "cool")
+#             i = i + 1
         
-        # check fan buttons
-        for i, button in enumerate(ui.fanButtonTargets):
-            if button.contains(point):
-                lastButtonPush = time.monotonic()
-                if ui.modeSetting == "manual":
-                    ui.toggleFan(1)
-                    feeds.publish(feeds.fanToggleFeed, 1)
+#         i = 0
+#         # check fan buttons
+#         for i, button in enumerate(ui.fanButtonTargets):
+#             if button.contains(point):
+#                 lastButtonPush = time.monotonic()
+#                 if ui.modeSetting == "manual":
+#                     ui.toggleFan(1)
+#                     feeds.publish(feeds.fanToggleFeed, 1)
 
-                if i == 0:
-                    feeds.publish(feeds.fanSpeedCommand, "0")
-                    ui.updateFanSpeed(0)
-                    ui.set_backlight(1)
-                else:
-                    newFanSpeed = 4 - i
-                    feeds.publish(feeds.fanSpeedCommand, str(newFanSpeed))
-                    ui.updateFanSpeed(newFanSpeed)
-                    ui.set_backlight(1)
-        time.sleep(.075)
+#                 if i == 0:
+#                     feeds.publish(feeds.fanSpeedCommand, "0")
+#                     ui.updateFanSpeed(0)
+#                     ui.set_backlight(1)
+#                 else:
+#                     newFanSpeed = 4 - i
+#                     feeds.publish(feeds.fanSpeedCommand, str(newFanSpeed))
+#                     ui.updateFanSpeed(newFanSpeed)
+#                     ui.set_backlight(1)
+#             i = i + 1
+
+#         time.sleep(.075)
 
 def checkButtons():
     global lastButtonPush
@@ -156,12 +161,11 @@ def mqtt_message(client, feed_id, payload):
 mqtt_client.on_message = mqtt_message
 
 checkTemperature()
-ui.updateMode("heat")
-feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
+# ui.updateMode("heat")
 prev_refresh_time = 0.0
 while True:
     # print("Main loop")
-    checkTouchScreen()
+    # checkTouchScreen()
     checkButtons()
     if (time.monotonic() - lastButtonPush) > 15 :
         ui.disableScreen()
