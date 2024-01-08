@@ -1,4 +1,5 @@
 import time
+from adafruit_display_shapes.rect import Rect
 from analogio import AnalogOut
 import displayio
 from displayio import ColorConverter, Display, Group
@@ -57,6 +58,22 @@ ui.append(temperatureGauge)
 ui.append(humidityGauge)
 ui.append(fanSpeedControls)
 ui.append(modeControls)
+
+# Connection indicator
+connectionIndicator = Group(x=0, y = 0)
+connectionLabel = Label(
+    x = 12, y = 8,
+    font=smallText,
+    color=styles.colors["black"]
+)
+connectionLabel.text = "connecting..."
+connectionIndicatorBackground = Rect(
+    x = 0, y = 0,
+    width=150, height = 21,
+    fill=styles.colors["heat"]
+)
+connectionIndicator.append(connectionIndicatorBackground)
+connectionIndicator.append(connectionLabel)
 
 # build out temperature gauge
 temperatureTic = Group(x=0, y=116)
@@ -208,7 +225,6 @@ screenActivateButton = Button(
     style=Button.RECT
 )
 ui.append(screenActivateButton)
-
 display.show(ui)
 
 def updateMode(newMode):
@@ -222,7 +238,6 @@ def updateMode(newMode):
     modeButtonLabels[getModeIndex(modeSetting)].color = 0x000000
 
 def updateTemperatureSetting(newTemperature):
-    print("updating temp setting")
     global temperatureSetting
     temperatureSetting = newTemperature
     startingTemperature = temperatureSetting + 5
@@ -270,10 +285,8 @@ def toggleFan(value):
     fanToggle = value
     if fanToggle == 1:
         if modeSetting == "heat":
-            print("Setting mode to heat")
             fanButtonBackgrounds[fanSpeed].fill = styles.colors["heat"]
         if modeSetting == "cool":
-            print("Setting mode to cool")
             fanButtonBackgrounds[fanSpeed].fill = styles.colors["cool"]
     else:
         fanButtonBackgrounds[fanSpeed].fill = styles.colors["white"]
