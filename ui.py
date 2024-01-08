@@ -246,9 +246,9 @@ def updateTemperature(newTemperature):
     maxTemp = temperatureSetting + 5
     
     if newTemperature < minTemp:
-        temperatureTic.y = minY
-    elif newTemperature > maxTemp:
         temperatureTic.y = maxY
+    elif newTemperature > maxTemp:
+        temperatureTic.y = minY
     else:
         temperatureTic.y = maxY - int((newTemperature - minTemp) * (maxY / 10))
 
