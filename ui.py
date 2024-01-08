@@ -151,7 +151,7 @@ fanButtonLabels[3].x = 16
 
 # build out mode buttons
 modeButtons = []
-modeButonTargets = []
+modeButtonTargets = []
 modeButtonBackgrounds = []
 modeButtonLabels = []
 for i in range(3):
@@ -164,7 +164,7 @@ for i in range(3):
         height=45,
         r=4,
         fill=0x000000))
-    modeButonTargets.append(Button(
+    modeButtonTargets.append(Button(
         x=0,
         y=0,
         width=50,
@@ -178,6 +178,7 @@ for i in range(3):
         line_spacing=0))
     modeButtons[i].append(modeButtonBackgrounds[i])
     modeButtons[i].append(modeButtonLabels[i])
+    modeButtons[i].append(modeButtonTargets[i])
 
 def getModeIndex(mode):
     if mode == "manual":
@@ -262,7 +263,7 @@ def updateHumidity(newHumidity):
     elif newHumidity > maxHumidity:
         humidityTic.y = minY
     else:
-        humidityTic.y = maxY - int((newHumidity - minHumidity)/10 * (maxY / 10))
+        humidityTic.y = maxY - int((newHumidity - minHumidity)/50 * maxY)
 
 def toggleFan(value):
     global fanToggle
