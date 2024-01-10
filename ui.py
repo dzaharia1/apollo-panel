@@ -28,7 +28,7 @@ ts = adafruit_touchscreen.Touchscreen(
         board.TOUCH_YU,
         board.TOUCH_YD,
         calibration=((5792, 56221), (9009, 53228)),
-        z_threshold=3200,
+        z_threshold=3400,
         size=(screen_width, screen_height))
 
 cwd = ("/"+__file__).rsplit('/', 1)[0]
@@ -217,10 +217,10 @@ modeButtonLabels[2].x = 12
 
 # button so that user can brighten screen to check stats
 screenActivateButton = Button(
-    x=0,
-    y=0,
-    width=screen_width,
-    height=screen_height,
+    x=30,
+    y=30,
+    width=screen_width - 60,
+    height=screen_height - 60,
     fill_color=None,
     outline_color=None,
     style=Button.RECT
