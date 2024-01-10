@@ -23,12 +23,12 @@ smallText = bitmap_font.load_font("fonts/futura-17.bdf")
 largeText = bitmap_font.load_font("fonts/futura-32.bdf")
 
 ts = adafruit_touchscreen.Touchscreen(
-        board.TOUCH_YD,
-        board.TOUCH_YU,
         board.TOUCH_XR,
         board.TOUCH_XL,
-        calibration=((8938, 53100), (9065, 59629)),
-        z_threshold=100,
+        board.TOUCH_YU,
+        board.TOUCH_YD,
+        calibration=((5792, 56221), (9009, 53228)),
+        z_threshold=3200,
         size=(screen_width, screen_height))
 
 cwd = ("/"+__file__).rsplit('/', 1)[0]
@@ -140,8 +140,9 @@ for i in range(4):
         height=45,
         r=4,
         fill=0x000000))
-    fanButtonTargets.append(Button(x=0,
-        y=0,
+    fanButtonTargets.append(Button(
+        x=fanSpeedControls.x,
+        y=fanSpeedControls.y + (i * 53),
         width=64,
         height=45,
         fill_color=None,
@@ -153,7 +154,7 @@ for i in range(4):
         line_spacing=0))
     fanButtons[i].append(fanButtonBackgrounds[i])
     fanButtons[i].append(fanButtonLabels[i])
-    fanButtons[i].append(fanButtonTargets[i])
+    ui.append(fanButtonTargets[i])
 
 fanButtonBackgrounds[fanSpeed].fill = styles.colors["white"]
 fanButtonLabels[fanSpeed].color = 0x000000
@@ -182,8 +183,8 @@ for i in range(3):
         r=4,
         fill=0x000000))
     modeButtonTargets.append(Button(
-        x=0,
-        y=0,
+        x=modeControls.x,
+        y=modeControls.y + (i * 62),
         width=50,
         height=45,
         fill_color=None,
@@ -195,7 +196,7 @@ for i in range(3):
         line_spacing=0))
     modeButtons[i].append(modeButtonBackgrounds[i])
     modeButtons[i].append(modeButtonLabels[i])
-    modeButtons[i].append(modeButtonTargets[i])
+    ui.append(modeButtonTargets[i])
 
 def getModeIndex(mode):
     if mode == "manual":
@@ -216,10 +217,10 @@ modeButtonLabels[2].x = 12
 
 # button so that user can brighten screen to check stats
 screenActivateButton = Button(
-    x=50,
-    y=100,
-    width=screen_width - (100),
-    height=screen_height - (200),
+    x=0,
+    y=0,
+    width=screen_width,
+    height=screen_height,
     fill_color=None,
     outline_color=None,
     style=Button.RECT

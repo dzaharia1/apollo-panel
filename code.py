@@ -38,8 +38,8 @@ def checkTouchScreen():
     global lastButtonPush
     point = ui.ts.touch_point
 
-    if point and point[2] > 3000:
-        print("There was a legitimate touch at " + (point[0]) + ", " + (point[1]))
+    if point:
+        print("There was a legitimate touch at " + str(point[0]) + ", " + str(point[1]))
         if ui.screenActivateButton.contains(point):
             print("Enabling screen")
             ui.enableScreen()
@@ -50,45 +50,43 @@ def checkTouchScreen():
 #         if ui.screenActivateButton.contains(point):
 #             ui.enableScreen()
 #             lastButtonPush = time.monotonic()
+        print("Touched while screen was enabled, continuing")
+        # check mode buttons
+        print("Checking mode buttons")
+        for i, button in enumerate(ui.modeButtonTargets):
+            if button.contains(point):
+                ui.enableScreen()
+                lastButtonPush = time.monotonic()
+                if i == 0:
+                    print("Got a touch on button " + str(i))
+                    ui.updateMode("manual")
+                    feeds.publish(feeds.modeSettingFeedCommand, "off")
+                elif i == 1:
+                    print("Got a touch on button " + str(i))
+                    ui.updateMode("heat")
+                    feeds.publish(feeds.modeSettingFeedCommand, "heat")
+                elif i == 2:
+                    print("Got a touch on button " + str(i))
+                    ui.updateMode("cool")
+                    feeds.publish(feeds.modeSettingFeedCommand, "cool")
 
-        if ui.screenEnabled:
-            print("Touched while screen was enabled, continuing")
-            # check mode buttons
-            print("Checking mode buttons")
-            for i, button in enumerate(ui.modeButtonTargets):
-                if button.contains(point):
-                    lastButtonPush = time.monotonic()
-                    if i == 0:
-                        print("Got a touch on button " + str(i))
-                        ui.updateMode("manual")
-                        feeds.publish(feeds.modeSettingFeedCommand, "off")
-                    elif i == 1:
-                        print("Got a touch on button " + str(i))
-                        ui.updateMode("heat")
-                        feeds.publish(feeds.modeSettingFeedCommand, "heat")
-                    elif i == 2:
-                        print("Got a touch on button " + str(i))
-                        ui.updateMode("cool")
-                        feeds.publish(feeds.modeSettingFeedCommand, "cool")
-            
-            i = 0
-            # check fan buttons
-            for i, button in enumerate(ui.fanButtonTargets):
-                if button.contains(point):
-                    lastButtonPush = time.monotonic()
-                    if ui.modeSetting == "manual":
-                        ui.toggleFan(1)
-                        feeds.publish(feeds.fanToggleFeed, 1)
+        # check fan buttons
+        for i, button in enumerate(ui.fanButtonTargets):
+            if button.contains(point):
+                ui.enableScreen()
+                lastButtonPush = time.monotonic()
+                if ui.modeSetting == "manual":
+                    feeds.publish(feeds.fanToggleFeed, 1)
+                
+                feeds.publish(feeds.fanSpeedCommand, str(i))
 
-                    if i == 0:
-                        feeds.publish(feeds.fanSpeedCommand, "0")
-                        ui.updateFanSpeed(0)
-                    else:
-                        newFanSpeed = 4 - i
-                        feeds.publish(feeds.fanSpeedCommand, str(newFanSpeed))
-                        ui.updateFanSpeed(newFanSpeed)
-                i = i + 1
-
+                # if i == 0:
+                #     feeds.publish(feeds.fanSpeedCommand, "0")
+                #     # ui.updateFanSpeedSetting(0)
+                # else:
+                #     newFanSpeed = 4 - i
+                #     feeds.publish(feeds.fanSpeedCommand, str(newFanSpeed))
+                #     ui.updateFanSpeedSetting(newFanSpeed)
         time.sleep(.075)
 
 def checkButtons():
@@ -129,7 +127,7 @@ def mqtt_message(client, feed_id, payload):
         ui.updateTemperatureSetting(floor(float(payload)))
         ui.updateTemperatureSetting()
         checkTemperature()
-    if feed_id == feeds.fanSpeedFeed:
+    if feed_id == feeds.fanSpeedCommand:
         print("got new fan speed setting")
         ui.updateFanSpeedSetting(int(payload))
     if feed_id == feeds.modeSettingFeed:
