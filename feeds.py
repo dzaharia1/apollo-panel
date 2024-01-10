@@ -28,12 +28,10 @@ humidityFeed = "state/humidity-sensor"
 commanderFeed = "commander/command"
 
 def connected(client, userdata, flags, rc):
-    # print("Connected to HA!")
-    return
+    print("Connected to HA!")
 
 def disconnected(client):
-    # print("Disconnected from HA")
-    return
+    print("Disconnected from HA")
 
 def subscribed(a, b, c, d):
     print("Connected to:")
@@ -84,7 +82,7 @@ def loop():
 
 mqtt_client.on_connect = connected
 mqtt_client.on_disconnect = disconnected
-# mqtt_client.on_subscribe = subscribed
+mqtt_client.on_subscribe = subscribed
 
 mqtt_client.connect()
 
