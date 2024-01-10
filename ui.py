@@ -43,7 +43,7 @@ humidityGraduationImage = createImage(cwd + "images/HumidityGaugeGraduation.bmp"
 temperatureTicImage = createImage(cwd + "images/temperatureTic.bmp")
 humidityTicImage = createImage(cwd + "images/humidityTic.bmp")
 
-fanSpeed = 1
+fanSpeed = 3
 temperatureSetting = 70
 fanToggle = 1
 modeSetting = "manual"
@@ -224,6 +224,7 @@ screenActivateButton = Button(
     outline_color=None,
     style=Button.RECT
 )
+
 ui.append(screenActivateButton)
 display.show(ui)
 
@@ -308,7 +309,7 @@ def disableScreen(force=False):
     global screenEnabled
     if screenEnabled or force:
         screenEnabled = False
-        set_backlight(.35)
+        set_backlight(.25)
 
 def enableScreen():
     global screenEnabled
