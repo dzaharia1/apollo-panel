@@ -48,6 +48,7 @@ mqtt_client = MQTT.MQTT(
 )
 
 def publish(feed, data):
+    print("Publishing " + str(data) + " to " + str(feed))
     try:
         mqtt_client.publish(feed, data, retain=True)
     except:
