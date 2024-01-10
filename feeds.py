@@ -90,4 +90,5 @@ mqtt_client.subscribe([
     (temperatureSettingFeed, 1),
     (modeSettingFeed, 1),
     (fanSpeedCommand, 1),
+    (fanToggleFeed, 1),
     (fanToggleFeed, 1)])
