@@ -107,6 +107,7 @@ def checkButtons():
             
 
 def checkTemperature():
+    print("Check readings")
     currTemp = round(temp_probe.temperature * (9 / 5) + 32 - 4, 1)
     currHumidity = round(temp_probe.relative_humidity, 1)
     # ui.currTempLabel.text = str(floor(currTemp)) + "F\n" + str(floor(currHumidity)) + "%"
@@ -132,14 +133,19 @@ def checkTemperature():
     ui.refresh_status_light()
 
 def mqtt_message(client, feed_id, payload):
+    print('Got {0} from {1}'.format(payload, feed_id))
+
     if feed_id == feeds.temperatureSettingFeed:
+        print("got new temperature setting")
         ui.updateTemperatureSetting(floor(float(payload)))
         ui.updateTemperatureSetting()
         checkTemperature()
     if feed_id == feeds.fanSpeedCommand:
+        print("got new fan speed setting")
         ui.updateFanSpeedSetting(int(payload))
         feeds.publish(feeds.fanSpeedFeed, ui.fanSpeed)
     if feed_id == feeds.modeSettingFeed:
+        print("got new mode setting")
         if payload == "heat" or payload == "cool" or payload == "manual":
             ui.updateMode(payload)
         if payload == "manual":
@@ -155,7 +161,8 @@ def mqtt_message(client, feed_id, payload):
 mqtt_client.on_message = mqtt_message
 
 checkTemperature()
-# ui.updateMode("heat")
+ui.updateMode("heat")
+feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
 prev_refresh_time = 0.0
 while True:
     # print("Main loop")
