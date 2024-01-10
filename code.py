@@ -44,13 +44,7 @@ def checkTouchScreen():
             print("Enabling screen")
             ui.enableScreen()
             lastButtonPush = time.monotonic()
-
-#     # touch detected
-#     if point and point[-1] > 30000:
-#         if ui.screenActivateButton.contains(point):
-#             ui.enableScreen()
-#             lastButtonPush = time.monotonic()
-        print("Touched while screen was enabled, continuing")
+            
         # check mode buttons
         print("Checking mode buttons")
         for i, button in enumerate(ui.modeButtonTargets):
@@ -78,15 +72,8 @@ def checkTouchScreen():
                 if ui.modeSetting == "manual":
                     feeds.publish(feeds.fanToggleFeed, 1)
                 
-                feeds.publish(feeds.fanSpeedCommand, str(i))
-
-                # if i == 0:
-                #     feeds.publish(feeds.fanSpeedCommand, "0")
-                #     # ui.updateFanSpeedSetting(0)
-                # else:
-                #     newFanSpeed = 4 - i
-                #     feeds.publish(feeds.fanSpeedCommand, str(newFanSpeed))
-                #     ui.updateFanSpeedSetting(newFanSpeed)
+                ui.updateFanSpeedSetting(i)
+                feeds.publish(feeds.fanSpeedFeed, i)
         time.sleep(.075)
 
 def checkButtons():
@@ -127,7 +114,7 @@ def mqtt_message(client, feed_id, payload):
         ui.updateTemperatureSetting(floor(float(payload)))
         ui.updateTemperatureSetting()
         checkTemperature()
-    if feed_id == feeds.fanSpeedCommand:
+    if feed_id == feeds.fanSpeedCommand or feed_id == feeds.fanSpeedFeed:
         print("got new fan speed setting")
         ui.updateFanSpeedSetting(int(payload))
     if feed_id == feeds.modeSettingFeed:
