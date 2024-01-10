@@ -116,22 +116,6 @@ def checkTemperature():
     feeds.publish(feeds.temperatureSensorFeed, currTemp)
     feeds.publish(feeds.humidityFeed, currHumidity)
 
-    # if ui.modeSetting == "heat":
-    #     if (currTemp <= ui.temperatureSetting):
-    #         ui.toggleFan(1)
-    #         feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
-    #     else:
-    #         ui.toggleFan(0)
-    #         feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
-    # elif ui.modeSetting == "cool":
-    #     if (currTemp >= ui.temperatureSetting):
-    #         ui.toggleFan(1)
-    #         feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
-    #     else:
-    #         ui.toggleFan(0)
-    #         feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
-    # ui.refresh_status_light()
-
 def mqtt_message(client, feed_id, payload):
     print('Got {0} from {1}'.format(payload, feed_id))
 
@@ -150,8 +134,6 @@ def mqtt_message(client, feed_id, payload):
             ui.updateMode(payload)
         elif payload == "off":
             ui.updateMode("manual")
-            # ui.toggleFan(0)
-            # feeds.publish(feeds.fanToggleFeed, ui.fanToggle)
         checkTemperature()
     if feed_id == feeds.fanToggleFeed:
         ui.toggleFan(int(payload))
@@ -163,7 +145,6 @@ checkTemperature()
 ui.updateMode("heat")
 prev_refresh_time = 0.0
 while True:
-    # print("Main loop")
     # checkTouchScreen()
     checkButtons()
     if (time.monotonic() - lastButtonPush) > 15 :
