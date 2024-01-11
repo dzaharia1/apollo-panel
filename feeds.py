@@ -34,8 +34,8 @@ def disconnected(client):
     print("Disconnected from HA")
 
 def subscribed(a, b, c, d):
-    print("Connected to:")
-    print(mqtt_client._subscribed_topics)
+    print("Resubscribed")
+    # print(mqtt_client._subscribed_topics)
 
 wifi.connect()
 

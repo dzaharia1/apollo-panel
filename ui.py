@@ -28,7 +28,7 @@ ts = adafruit_touchscreen.Touchscreen(
         board.TOUCH_YU,
         board.TOUCH_YD,
         calibration=((5792, 56221), (9009, 53228)),
-        z_threshold=3400,
+        z_threshold=3600,
         size=(screen_width, screen_height))
 
 cwd = ("/"+__file__).rsplit('/', 1)[0]
@@ -253,7 +253,10 @@ def updateFanSpeedSetting(newSpeed):
     for i in range(len(fanButtons)):
         fanButtonBackgrounds[i].fill = 0x000000
         fanButtonLabels[i].color = styles.colors["white"]
-    fanButtonBackgrounds[fanSpeed].fill = styles.colors["white"]
+    if fanToggle and (modeSetting == "cool" or modeSetting == "heat"):
+            fanButtonBackgrounds[fanSpeed].fill = styles.colors[modeSetting]
+    else:
+        fanButtonBackgrounds[fanSpeed].fill = styles.colors["white"]
     fanButtonLabels[fanSpeed].color = 0x000000
     
 def updateTemperature(newTemperature):
@@ -280,7 +283,7 @@ def updateHumidity(newHumidity):
     elif newHumidity > maxHumidity:
         humidityTic.y = minY
     else:
-        humidityTic.y = maxY - int((newHumidity - minHumidity)/50 * maxY)
+        humidityTic.y = maxY - int((newHumidity - minHumidity)/50 * maxY) + 2
 
 def toggleFan(value):
     global fanToggle
