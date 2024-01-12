@@ -39,7 +39,6 @@ def checkTouchScreen():
     point = ui.ts.touch_point
 
     if point:
-        print("There was a legitimate touch at " + str(point[0]) + ", " + str(point[1]) + " with pressure of " + str(point[2]))
         if ui.screenActivateButton.contains(point):
             print("Enabling screen")
             ui.enableScreen()
@@ -55,14 +54,17 @@ def checkTouchScreen():
                     print("Got a touch on button " + str(i))
                     ui.updateMode("manual")
                     feeds.publish(feeds.modeSettingFeedCommand, "off")
+                    checkTemperature()
                 elif i == 1:
                     print("Got a touch on button " + str(i))
                     ui.updateMode("heat")
                     feeds.publish(feeds.modeSettingFeedCommand, "heat")
+                    checkTemperature()
                 elif i == 2:
                     print("Got a touch on button " + str(i))
                     ui.updateMode("cool")
                     feeds.publish(feeds.modeSettingFeedCommand, "cool")
+                    checkTemperature()
 
         # check fan buttons
         for i, button in enumerate(ui.fanButtonTargets):
@@ -73,8 +75,7 @@ def checkTouchScreen():
                     feeds.publish(feeds.fanToggleFeed, 1)
                 
                 ui.updateFanSpeedSetting(i)
-                # feeds.publish(feeds.fanSpeedFeed, i)
-                feeds.publish(feeds.fanSpeedCommand, i)
+                feeds.publish(feeds.fanSpeedFeed, i)
         time.sleep(.075)
 
 def checkButtons():
@@ -108,17 +109,17 @@ def checkTemperature():
     feeds.publish(feeds.humidityFeed, currHumidity)
 
     if ui.modeSetting == "heat":
-        if currTemp < ui.temperatureSetting - 1:
+        if currTemp < ui.temperatureSetting - .5:
             ui.toggleFan(1)
             feeds.publish(feeds.fanToggleFeed, 1)
-        elif currTemp > ui.temperatureSetting + 1:
+        elif currTemp > ui.temperatureSetting + .5:
             ui.toggleFan(0)
             feeds.publish(feeds.fanToggleFeed, 0)
     if ui.modeSetting == "cool":
-        if currTemp > ui.temperatureSetting + 1:
+        if currTemp > ui.temperatureSetting + .5:
             ui.toggleFan(1)
             feeds.publish(feeds.fanToggleFeed, 1)
-        elif currTemp < ui.temperatureSetting - 1:
+        elif currTemp < ui.temperatureSetting - .5:
             ui.toggleFan(0)
             feeds.publish(feeds.fanToggleFeed, 0)
 
@@ -130,7 +131,7 @@ def mqtt_message(client, feed_id, payload):
         ui.updateTemperatureSetting(floor(float(payload)))
         ui.updateTemperatureSetting()
         checkTemperature()
-    if feed_id == feeds.fanSpeedCommand or feed_id == feeds.fanSpeedFeed:
+    if feed_id == feeds.fanSpeedCommand:
         print("got new fan speed setting")
         ui.updateFanSpeedSetting(int(payload))
     if feed_id == feeds.modeSettingFeed:

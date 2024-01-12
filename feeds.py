@@ -48,7 +48,9 @@ mqtt_client = MQTT.MQTT(
 )
 
 def publish(feed, data):
-    print("Publishing " + str(data) + " to " + str(feed))
+
+    if feed == fanSpeedCommand or feed == fanSpeedFeed:
+        print("~~~~~~~~~~~~~~~~~~~~~~~~~ Publishing " + str(data) + " to " + str(feed) + " ~~~~~~~~~~~~~~~~~~~~~~~~~")
     try:
         mqtt_client.publish(feed, data, retain=True)
     except:
@@ -76,6 +78,7 @@ def loop():
                 (temperatureSettingFeed, 1),
                 (modeSettingFeed, 1),
                 (fanSpeedCommand, 1),
+                (fanToggleFeed, 1),
                 (fanToggleFeed, 1)])
         except:
             wifi.reset()
