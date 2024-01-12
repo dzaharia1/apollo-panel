@@ -140,6 +140,8 @@ def mqtt_message(client, feed_id, payload):
             ui.updateMode(payload)
         elif payload == "off":
             ui.updateMode("manual")
+            ui.toggleFan(0)
+            feeds.publish(feeds.fanToggleFeed, 0)
         checkTemperature()
     if feed_id == feeds.fanToggleFeed:
         ui.toggleFan(int(payload))
