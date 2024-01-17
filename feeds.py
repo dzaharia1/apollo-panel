@@ -37,6 +37,7 @@ def subscribed(a, b, c, d):
     print("Resubscribed")
     # print(mqtt_client._subscribed_topics)
 
+print("Connecting to wifi")
 wifi.connect()
 
 MQTT.set_socket(socket, esp)
