@@ -28,7 +28,7 @@ ts = adafruit_touchscreen.Touchscreen(
         board.TOUCH_YU,
         board.TOUCH_YD,
         calibration=((5792, 56221), (9009, 53228)),
-        z_threshold=3600,
+        z_threshold=4000,
         size=(screen_width, screen_height))
 
 cwd = ("/"+__file__).rsplit('/', 1)[0]
@@ -199,7 +199,7 @@ for i in range(3):
     ui.append(modeButtonTargets[i])
 
 def getModeIndex(mode):
-    if mode == "manual":
+    if mode == "manual" or mode == "off":
         return 0
     elif mode == "heat":
         return 1
