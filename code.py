@@ -38,14 +38,15 @@ def checkTouchScreen():
     global lastButtonPush
     point = ui.ts.touch_point
 
-    if point:
+    if point and point[2] > 3400 and not ui.screenEnabled:
         if ui.screenActivateButton.contains(point):
             print("Enabling screen")
             ui.enableScreen()
             lastButtonPush = time.monotonic()
-            
-        # check mode buttons
-        print("Checking mode buttons")
+            time.sleep(.075)
+            return
+        
+    elif point and point[2] > 3400 and ui.screenEnabled:
         for i, button in enumerate(ui.modeButtonTargets):
             if button.contains(point):
                 ui.enableScreen()
@@ -76,6 +77,7 @@ def checkTouchScreen():
                 
                 ui.updateFanSpeedSetting(i)
                 feeds.publish(feeds.fanSpeedFeed, i)
+                feeds.publish(feeds.fanSpeedCommand, i)
         time.sleep(.075)
 
 def checkButtons():
@@ -122,6 +124,9 @@ def checkTemperature():
         elif currTemp < ui.temperatureSetting - .5:
             ui.toggleFan(0)
             feeds.publish(feeds.fanToggleFeed, 0)
+    if ui.modeSetting == "off":
+        ui.toggleFan(0)
+        feeds.publish(feeds.fanToggleFeed, 0)
 
 def mqtt_message(client, feed_id, payload):
     print('Got {0} from {1}'.format(payload, feed_id))
