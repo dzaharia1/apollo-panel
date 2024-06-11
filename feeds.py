@@ -49,12 +49,11 @@ mqtt_client = MQTT.MQTT(
 )
 
 def publish(feed, data):
-
-    if feed == fanSpeedCommand or feed == fanSpeedFeed:
-        print("~~~~~~~~~~~~~~~~~~~~~~~~~ Publishing " + str(data) + " to " + str(feed) + " ~~~~~~~~~~~~~~~~~~~~~~~~~")
+    print("~~~~~~~~~~~~~~~~~~~~~~~~~ Publishing " + str(data) + " to " + str(feed) + " ~~~~~~~~~~~~~~~~~~~~~~~~~")
     try:
         mqtt_client.publish(feed, data, retain=True)
     except:
+        print("publish failed")
         try:
             mqtt_client.reconnect(resub_topics=False)
             mqtt_client.subscribe([
@@ -79,7 +78,6 @@ def loop():
                 (temperatureSettingFeed, 1),
                 (modeSettingFeed, 1),
                 (fanSpeedCommand, 1),
-                (fanToggleFeed, 1),
                 (fanToggleFeed, 1)])
         except:
             wifi.reset()
@@ -95,5 +93,4 @@ mqtt_client.subscribe([
     (temperatureSettingFeed, 1),
     (modeSettingFeed, 1),
     (fanSpeedCommand, 1),
-    (fanToggleFeed, 1),
     (fanToggleFeed, 1)])

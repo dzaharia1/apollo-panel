@@ -134,7 +134,8 @@ def mqtt_message(client, feed_id, payload):
     if feed_id == feeds.temperatureSettingFeed:
         print("got new temperature setting")
         ui.updateTemperatureSetting(floor(float(payload)))
-        ui.updateTemperatureSetting()
+        # ui.updateTemperatureSetting()
+        feeds.publish(feeds.temperatureSettingFeedCommand, ui.temperatureSetting)
         checkTemperature()
     if feed_id == feeds.fanSpeedCommand:
         print("got new fan speed setting")
