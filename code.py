@@ -2,7 +2,7 @@ import board
 import time
 import terminalio
 import busio
-import adafruit_htu31d
+import adafruit_bme680
 from analogio import AnalogIn
 font = terminalio.FONT
 from math import floor
@@ -14,14 +14,14 @@ from adafruit_seesaw.digitalio import DigitalIO
 import digitalio
 from adafruit_seesaw.pwmout import PWMOut
 
-i2c_bus = busio.I2C(board.SCL, board.SDA)
-temp_probe = adafruit_htu31d.HTU31D(i2c_bus)
+i2c = board.I2C()
+temp_probe = adafruit_bme680.Adafruit_BME680_I2C(i2c)
 temp_probe.heater = False
 lightSensor = AnalogIn(board.LIGHT)
 
 # set up the switches
-leftButtonBoard = Seesaw(i2c_bus, 0x3A)
-rightButtonBoard = Seesaw(i2c_bus, 0x3B)
+leftButtonBoard = Seesaw(i2c, 0x3A)
+rightButtonBoard = Seesaw(i2c, 0x3B)
 buttonBoards = (leftButtonBoard, rightButtonBoard)
 buttonPins = (18, 19, 20, 2)
 buttons = []
@@ -103,7 +103,7 @@ def checkButtons():
 def checkTemperature():
     print("Check readings")
     currTemp = round(temp_probe.temperature * (9 / 5) + 32 - 4, 1)
-    currHumidity = round(temp_probe.relative_humidity, 1)
+    currHumidity = round(temp_probe.humidity, 1)
     # ui.currTempLabel.text = str(floor(currTemp)) + "F\n" + str(floor(currHumidity)) + "%"
     ui.updateTemperature(currTemp)
     ui.updateHumidity(currHumidity)
