@@ -7,6 +7,7 @@ from adafruit_esp32spi import adafruit_esp32spi_wifimanager
 import adafruit_esp32spi.adafruit_esp32spi_socket as socket
 import adafruit_minimqtt.adafruit_minimqtt as MQTT
 from secrets import secrets
+import time
 
 esp32_cs = DigitalInOut(board.ESP_CS)
 esp32_ready = DigitalInOut(board.ESP_BUSY)
@@ -49,11 +50,11 @@ mqtt_client = MQTT.MQTT(
 )
 
 def publish(feed, data):
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~ Publishing " + str(data) + " to " + str(feed) + " ~~~~~~~~~~~~~~~~~~~~~~~~~")
+    print("~~~~~~~~~~~~~~ Publishing " + str(data) + " to " + str(feed) + " ~~~~~~~~~~~~~~")
     try:
         mqtt_client.publish(feed, data, retain=True)
-    except:
-        print("publish failed")
+    except Exception as e:
+        print(f"publish failed: {e}")
         try:
             mqtt_client.reconnect(resub_topics=False)
             mqtt_client.subscribe([
@@ -62,26 +63,25 @@ def publish(feed, data):
                 (fanSpeedCommand, 1),
                 (fanToggleFeed, 1)])
         except:
-            wifi.reset()
             wifi.connect()
-
-        publish(feed, data)
+        time.sleep(0.1)
 
 def loop():
     try:
-        mqtt_client.loop(timeout=.05)
-    except:
+        mqtt_client.loop(timeout=0.01)
+    except Exception as e:
         try:
-            # mqtt_client.reconnect()
+            print(f"loop failed: {e}")
             mqtt_client.reconnect(resub_topics=False)
             mqtt_client.subscribe([
                 (temperatureSettingFeed, 1),
                 (modeSettingFeed, 1),
                 (fanSpeedCommand, 1),
                 (fanToggleFeed, 1)])
-        except:
-            wifi.reset()
+        except Exception as e:
+            print(f"Failed to recover from failed loop: {e}")
             wifi.connect()
+        time.sleep(0.1)
 
 mqtt_client.on_connect = connected
 mqtt_client.on_disconnect = disconnected
